@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <RootNamespace>DoubleUs.API</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DoubleUs.Application\DoubleUs.Application.csproj" />
+    <ProjectReference Include="..\DoubleUs.Infrastructure\DoubleUs.Infrastructure.csproj" />
+    <ProjectReference Include="..\DoubleUs.Integrations\DoubleUs.Integrations.csproj" />
+    <ProjectReference Include="..\DoubleUs.AI\DoubleUs.AI.csproj" />
+  </ItemGroup>
+</Project>

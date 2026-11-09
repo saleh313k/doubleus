@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>DoubleUs.UnitTests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DoubleUs.Domain\DoubleUs.Domain.csproj" />
+    <ProjectReference Include="..\..\src\DoubleUs.Application\DoubleUs.Application.csproj" />
+    <ProjectReference Include="..\..\src\DoubleUs.Infrastructure\DoubleUs.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\DoubleUs.Integrations\DoubleUs.Integrations.csproj" />
+    <ProjectReference Include="..\..\src\DoubleUs.AI\DoubleUs.AI.csproj" />
+  </ItemGroup>
+</Project>

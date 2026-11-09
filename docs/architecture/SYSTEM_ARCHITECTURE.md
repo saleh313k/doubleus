@@ -46,7 +46,7 @@ Agent -> API (authorized, tenant-verified) -> outbound message row (idempotency 
 - Shared database, shared schema, `TenantId` on every tenant-owned row.
 - Tenant resolved per request and **verified against the user's `TenantMember` record**; never trusted from the client alone.
 - EF Core global query filters by current tenant; worker jobs carry TenantId explicitly and set tenant context.
-- PostgreSQL Row-Level Security as defense in depth (evaluated in Phase 1; not the sole control).
+- PostgreSQL Row-Level Security is mandatory defense in depth (D-010). EF filters are not the security boundary. Full strategy incl. raw SQL, jobs, admin operations and tenant switching: docs/security/TENANT_ISOLATION.md.
 - pgvector queries always include the tenant predicate. Integration tests prove cross-tenant access fails.
 
 ## 5. Authentication and authorization
@@ -65,13 +65,15 @@ One-way signed events from the core app to n8n (HMAC + timestamp), with timeouts
 SignalR hub with per-tenant groups, authorized by membership. Redis backplane when scaled out.
 
 ## 10. Reliability
+See docs/architecture/RELIABLE_MESSAGING.md (inbox/outbox, idempotency, retries, dead-letter). Token handling: docs/security/TOKEN_SECURITY.md.
+
 Outbox/inbox tables, idempotent jobs, bounded exponential-backoff retries, dead-letter visibility, health checks (DB, Redis, providers), correlation IDs end to end.
 
 ## 11. Deployment
 Docker Compose: api, worker, frontend, postgres (pgvector), redis, n8n, nginx. Postgres, Redis and the n8n editor are not publicly exposed. Migrations are applied by an explicit step, never at production startup.
 
 ## 12. Open design questions
-- RLS adoption scope (Phase 1).
+- RLS policy rollout details (Phase 1 task 3).
 - Job infrastructure: custom outbox + BackgroundService vs Hangfire/Quartz (Phase 1, ADR).
 - Embedding model and vector dimension for Arabic + English (Phase 5, needs evaluation).
 - Token encryption: ASP.NET Data Protection vs AES-GCM with envelope keys (Phase 1, ADR).

@@ -20,11 +20,14 @@ Phases run in order; each ends with a PR and **owner approval before the next st
 - Decide n8n licensing path.
 - Pick initial AI provider(s) and test Arabic quality.
 
-## Phase 1 proposed task breakdown (for approval, not started)
-1. Solution + projects + central package management + analyzers + .editorconfig.
+## Phase 1 approved task breakdown (approved 2026-11-09; scope is limited to this list)
+1. Solution + projects + central package management + analyzers + .editorconfig.  <- in progress
 2. Docker Compose (postgres+pgvector, redis) and health endpoints.
-3. EF Core context, base entity conventions, tenant filter, first migration.
+3. EF Core context, base entity conventions, tenant filter + RLS, first migration.
 4. Identity, registration/login/logout, refresh rotation, rate limiting.
 5. Tenants, members, invitations, role policies.
-6. Token encryption service (ADR first).
-7. Architecture tests + tenant isolation tests; GitHub Actions CI.
+6. Token encryption service (ADR D-009 first) incl. log redaction.
+7. Generic inbox/outbox/dead-letter primitives (no channel logic).
+8. Architecture tests + tenant isolation tests; GitHub Actions CI.
+
+Out of scope for Phase 1: any frontend, Meta calls, AI, n8n, inbox UI, billing.

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DoubleUs.Worker</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Microsoft.Extensions.Hosting ships in the ASP.NET Core shared framework; no NuGet package needed. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DoubleUs.Application\DoubleUs.Application.csproj" />
+    <ProjectReference Include="..\DoubleUs.Infrastructure\DoubleUs.Infrastructure.csproj" />
+    <ProjectReference Include="..\DoubleUs.Integrations\DoubleUs.Integrations.csproj" />
+    <ProjectReference Include="..\DoubleUs.AI\DoubleUs.AI.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,71 @@
+From 94f0f064283d39d05052bb070367521d1e8d8d99 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 9 Nov 2026 11:29:39 +0000
+Subject: [PATCH] fix(tests): allow Snake_case test names (CA1707) for
+ tests/**; record owner test run
+
+---
+ .editorconfig                             | 4 ++++
+ docs/development/IMPLEMENTATION_STATUS.md | 8 ++++++--
+ docs/development/SESSION_STATE.md         | 6 +++---
+ 3 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/.editorconfig b/.editorconfig
+index 898aff4..48775ab 100644
+--- a/.editorconfig
++++ b/.editorconfig
+@@ -32,3 +32,7 @@ dotnet_naming_style.underscore_camel.capitalization = camel_case
+ dotnet_diagnostic.CA2007.severity = none
+ # Localization is handled at the application layer (i18n), not via resx in every assembly
+ dotnet_diagnostic.CA1303.severity = none
++
++[tests/**.cs]
++# Test method names use Snake_case sentences by convention
++dotnet_diagnostic.CA1707.severity = none
+diff --git a/docs/development/IMPLEMENTATION_STATUS.md b/docs/development/IMPLEMENTATION_STATUS.md
+index b0569c4..f353274 100644
+--- a/docs/development/IMPLEMENTATION_STATUS.md
++++ b/docs/development/IMPLEMENTATION_STATUS.md
+@@ -24,7 +24,11 @@ Last updated: 2026-11-09
+ - `dotnet build src/DoubleUs.API` and `src/DoubleUs.Worker` (with all referenced libraries): 0 warnings, 0 errors, warnings-as-errors on.
+ - Project reference rules checked with an ad hoc script against the real csproj files: all pass.
+ 
++## Owner-run result (2026-11-09, SDK 10.0.402, Windows)
++- Restore succeeded: the central package versions are valid on NuGet.
++- First `dotnet test` run failed on analyzer rule CA1707 (underscores in test method names). Fixed by scoping `CA1707` to `none` for `tests/**.cs` in `.editorconfig`. The fix is confirmed on a probe project in the authoring sandbox, but the **real test run after the fix is still pending**.
++- IntegrationTests has no tests yet by design; `dotnet test` prints a "no test is available" warning for it until Phase 1 task 3.
++
+ ## NOT verified
+-- **No tests have been executed.** The sandbox cannot reach NuGet, so xunit/test projects could not be restored or run. Tests are written (`ProjectReferenceRulesTests`, `AssemblyMarkerTests`) but their first real run will be CI or the owner's machine: run `dotnet test DoubleUs.sln`.
+-- Versions in `Directory.Packages.props` (Microsoft.NET.Test.Sdk 17.14.1, xunit 2.9.3, xunit.runner.visualstudio 3.1.4) were chosen from memory and not checked against NuGet.
++- **No test has passed yet.** Expected after the fix: ArchitectureTests (3 test methods, 9 cases) and UnitTests (5 cases) should run; confirm with `dotnet test DoubleUs.sln`.
+ - No Meta integration, no Meta calls, no database, no Docker exist yet.
+diff --git a/docs/development/SESSION_STATE.md b/docs/development/SESSION_STATE.md
+index de77f60..aed3d1f 100644
+--- a/docs/development/SESSION_STATE.md
++++ b/docs/development/SESSION_STATE.md
+@@ -23,10 +23,10 @@ global.json, Directory.Build.props, Directory.Packages.props, .editorconfig, .gi
+ None.
+ 
+ ## Tests
+-Written, not executed (NuGet unreachable in authoring sandbox). Build verified. See IMPLEMENTATION_STATUS.md.
++Owner run 1: restore OK, build of src OK, test projects failed CA1707 (fixed, re-run pending). See IMPLEMENTATION_STATUS.md.
+ 
+ ## Known Issues
+-- Tests unrun; central package versions unchecked against NuGet.
++- Tests not yet confirmed passing: owner's first run failed on CA1707 in test names; fixed in .editorconfig, awaiting re-run.
+ - Authoring environment cannot push to GitHub; work delivered as git bundle/zip.
+ - Oman eligibility for Meta products still unverified (META_ASSUMPTIONS #5).
+ - Graph API v27.0 messaging-relevant changes not yet reviewed.
+@@ -35,7 +35,7 @@ Written, not executed (NuGet unreachable in authoring sandbox). Build verified.
+ D-001..D-015 in DECISIONS.md. Phase 1 has no Meta calls, no n8n, no frontend.
+ 
+ ## Next Actions
+-1. Owner: run `dotnet test DoubleUs.sln` locally and confirm green.
++1. Owner: re-run `dotnet test DoubleUs.sln` after the CA1707 fix and confirm green.
+ 2. Task 2: Docker Compose (pgvector/postgres, redis, non-owner app DB role scaffold) and `/health/live` + `/health/ready`.
+ 3. Task 3: EF Core + RLS (ADR D-009/D-010 details first).
+ 
+-- 
+2.43.0
+
