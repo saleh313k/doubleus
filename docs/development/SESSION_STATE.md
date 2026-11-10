@@ -15,7 +15,7 @@ Phase 0 complete (unmerged). Phase 1: task 1 confirmed; task 2 health endpoints 
 - Task 2: /health/live + /health/ready (TCP probes, optional Redis), HealthEndpointTests (6), .gitattributes, optional docker-compose.yml (SQL Server + Redis), .env.example, infrastructure/scripts/local-sqlserver-setup.sql, docs/deployment/LOCAL_DEVELOPMENT.md. (Originally built on PostgreSQL; switched by D-016.)
 
 ## Current Task
-Awaiting owner approval of docs/security/RLS_ROLLOUT_PLAN.md (D-017) and D-009 before any Task 3 code. None in progress. Next is Task 3 after owner confirms task 2 (docker compose up + dotnet test).
+Owner approved the Task 3 plan (D-017), D-009 and D-018 on 2026-11-10. Task 3 is to be implemented locally with Claude Code per docs/development/CLAUDE_CODE_HANDOFF.md. Not started. Next is Task 3 after owner confirms task 2 (docker compose up + dotnet test).
 
 ## Files Modified
 global.json, Directory.Build.props, Directory.Packages.props, .editorconfig, .gitignore, DoubleUs.sln, src/**, tests/**, docker-compose.yml, .env.example, .gitattributes, infrastructure/scripts/local-sqlserver-setup.sql, docs/**; API health code in src/DoubleUs.API/Health/
@@ -38,9 +38,9 @@ Owner run 1: restore OK, build of src OK, test projects failed CA1707 (fixed, re
 D-001..D-016 in DECISIONS.md (D-016: SQL Server replaces PostgreSQL). Phase 1 has no Meta calls, no n8n, no frontend.
 
 ## Next Actions
-1. Owner: install SQL Server 2025 Developer, run infrastructure/scripts/local-sqlserver-setup.sql (docs/deployment/LOCAL_DEVELOPMENT.md), re-run `dotnet test DoubleUs.sln` (expect 20 tests), report results.
-2. Task 3: EF Core SQL Server + RLS security policy + first migration (write D-009 token-encryption ADR and RLS rollout plan first, get owner approval); replace the TCP database health probe with an EF query.
-3. Task 4: Identity/auth.
+1. Owner: move the work into a proper local git clone (CLAUDE_CODE_HANDOFF.md, step 1) and set the test connection env vars.
+2. Claude Code: implement Task 3 exactly per docs/security/RLS_ROLLOUT_PLAN.md; commit in small steps on feature/backend-foundation; stop at the Definition of Done and report.
+3. Then Task 4 (Identity/auth) only after owner approval.
 
 ## Git State
 - Branch: feature/backend-foundation (based on docs/phase-0-planning)

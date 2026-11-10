@@ -48,6 +48,6 @@ Per-tenant retention windows; disconnecting a channel revokes and destroys its c
 
 ## SQL Server specifics
 - **Types:** `uniqueidentifier` keys, `datetime2` columns holding UTC, `nvarchar` for all text (Arabic and emoji), database collation `Latin1_General_100_CI_AS_SC`.
-- **Key generation:** random GUIDs fragment clustered indexes; use sequential keys (application-generated UUIDv7 or `NEWSEQUENTIALID()`), decided in task 3.
+- **Key generation (D-018):** random GUIDs fragment clustered indexes. Use client-generated sequential GUIDs from EF Core's SQL Server-aware generator. Raw UUIDv7 is not sequential under SQL Server's `uniqueidentifier` ordering.
 - **Idempotency uniques:** a SQL Server unique index allows only one NULL, so nullable unique columns (for example optional provider IDs) use filtered unique indexes.
 - **Vector support** requires SQL Server 2025 or Azure SQL Database; SQL Server 2022 and earlier cannot be used.

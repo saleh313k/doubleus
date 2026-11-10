@@ -1,9 +1,9 @@
 # Phase 1 Task 3 Plan: EF Core, Tenant Filter, SQL Server RLS, First Migration
 
-Status: **PROPOSED, awaiting owner approval. No Task 3 code exists.** Implements TENANT_ISOLATION.md layers 2-4 on SQL Server (D-010, D-016).
+Status: **APPROVED by owner 2026-11-10 (D-017). No Task 3 code exists yet.** Implements TENANT_ISOLATION.md layers 2-4 on SQL Server (D-010, D-016).
 
 ## Honest constraint
-Task 3 needs NuGet packages (EF Core SQL Server provider and design-time tooling). The authoring sandbox cannot reach NuGet, so **it cannot compile or run Task 3 code**; every build/test result must come from the owner's machine (or CI). Recommended: run Task 3 onward with Claude Code inside the local clone, where `dotnet build/test` and the local SQL Server are available. See the end of this file.
+Task 3 needs NuGet packages (EF Core SQL Server provider and design-time tooling). The authoring sandbox cannot reach NuGet, so **it cannot compile or run Task 3 code**; every build/test result must come from the owner's machine (or CI). Decision (owner, 2026-11-10): Task 3 onward is implemented with Claude Code inside the local clone, where `dotnet build/test` and the local SQL Server are available. See docs/development/CLAUDE_CODE_HANDOFF.md.
 
 ## Scope (and non-scope)
 In: `Domain` base types and `ITenantOwned`; `ITenantContext`; `DoubleUsDbContext` (EF Core 10, SQL Server); tenant query filter; SaveChanges tenant stamping/guard; connection interceptor that sets the tenant session context; RLS objects and a reusable migration helper; first migration (`Tenants` table + `Security` schema + predicate function); real database health probe; isolation tests against the local SQL Server.
@@ -41,7 +41,7 @@ Configured by environment variables `DOUBLEUS_TEST_OWNER_CONNECTION` and `DOUBLE
 ## Definition of done for Task 3
 Migration applies cleanly via the owner login; all tests above green on the owner's machine; docs (TENANT_ISOLATION, DATABASE_DESIGN, LOCAL_DEVELOPMENT) updated with results; pooling decision recorded as an ADR.
 
-## Open items needing owner decisions
-- Approve this plan and D-009 (see TOKEN_SECURITY.md).
-- Primary key strategy: application-generated UUIDv7 (recommended) vs `NEWSEQUENTIALID()`.
-- Where to continue implementation (see Honest constraint).
+## Decisions log for this plan
+- (resolved) Plan and D-009 approved.
+- (resolved, D-018) Primary keys: client-generated sequential GUIDs via EF Core's SQL Server-aware generator, not raw UUIDv7.
+- (resolved) Implementation continues locally with Claude Code.

@@ -17,6 +17,17 @@ At roughly 65–70% context use: stop starting new work, finish the current smal
 - No unrequested refactors; don't touch working components unless the task requires it.
 - **Phase gate:** after finishing a phase, stop and wait for the owner's approval before the next.
 
+## Local environment (owner's machine)
+- Windows + PowerShell. .NET SDK 10. Docker is NOT used.
+- Database: SQL Server 2025 Express, named instance `localhost\SQLEXPRESS`, database `DoubleUs`, SQL logins `doubleus_owner` (migrations/DDL) and `doubleus_app` (runtime, DML only). Mixed mode is enabled. Setup script: `infrastructure/scripts/local-sqlserver-setup.sql`; guide: `docs/deployment/LOCAL_DEVELOPMENT.md`.
+- Connection strings and passwords come from environment variables or user-secrets, never from the repo. Test variables: `DOUBLEUS_TEST_OWNER_CONNECTION`, `DOUBLEUS_TEST_APP_CONNECTION`. Runtime: `ConnectionStrings__Default` (app login), `ConnectionStrings__Migrations` (owner login).
+- Before every commit run `dotnet build DoubleUs.sln` and `dotnet test DoubleUs.sln` and report real results. Never claim a check passed that you did not run.
+- Package versions: look up current versions on NuGet yourself and add them to `Directory.Packages.props` (central package management; no inline versions).
+- Redis is optional and unused in Phase 1.
+
+## Current task pointer
+Phase 1 is approved with a fixed 8-task list (docs/development/ROADMAP.md). Task 3 is specified in `docs/security/RLS_ROLLOUT_PLAN.md` (approved). Do not start Task 4 before the owner approves Task 3.
+
 ## Architecture (see docs/architecture)
 Modular monolith. Projects: API, Application, Domain, Infrastructure, Integrations, AI, Worker (+ frontend, automation, tests, infrastructure, docs). Dependency direction: API → Application → Domain; Infrastructure/Integrations/AI implement Application interfaces. Keep provider-specific (Meta, AI vendor) logic inside adapters. Controllers stay thin.
 
