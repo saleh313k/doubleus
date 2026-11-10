@@ -12,7 +12,7 @@ Last updated: 2026-11-09
 | # | Task | Status |
 |---|---|---|
 | 1 | Solution, projects, central package management, analyzers, .editorconfig | **Done, tests confirmed by owner** |
-| 2 | Health endpoints + local database setup | **Health endpoints done; owner ran 18/18 tests green before the SQL Server change. Database setup (SQL Server) not yet done by owner** |
+| 2 | Health endpoints + local database setup | **Done: owner ran 20/20 tests green on the SQL Server version (2026-11-10). Local SQL Server 2025 Express (SQLEXPRESS) installed, DoubleUs database and logins created, mixed mode enabled. Pending owner confirmation: app-login least-privilege check; fixed TCP port 1433 (not yet listening)** |
 | 3 | EF Core (SQL Server), tenant filter + RLS security policy, first migration | Not started |
 | 4 | Identity, auth, refresh rotation, rate limiting | Not started |
 | 5 | Tenants, members, invitations, role policies | Not started |
@@ -26,7 +26,7 @@ Verified here (SDK 10.0.114, no SQL Server available): API builds with 0 warning
 Microsoft docs confirm (read via search): EF Core 10 supports the SQL Server `vector` type (`SqlVector<float>`, `VECTOR_DISTANCE`) on SQL Server 2025 and Azure SQL only; vector indexes/`VECTOR_SEARCH` are experimental.
 
 ## NOT verified
-- The updated `HealthEndpointTests` (6 tests) have not been run; owner's last run (18 passed) was the Postgres-era 4 health tests.
+- (resolved) Owner ran all 20 tests green, including the 6 SQL Server-era health tests.
 - `infrastructure/scripts/local-sqlserver-setup.sql` and `docker-compose.yml` have never been executed; the `mcr.microsoft.com/mssql/server:2025-latest` tag is unchecked.
 - SQL Server RLS behavior with connection pooling is unproven (mandatory test in task 3).
 - No Meta integration, no Meta calls, no database schema exist yet.

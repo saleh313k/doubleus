@@ -15,7 +15,7 @@ Phase 0 complete (unmerged). Phase 1: task 1 confirmed; task 2 health endpoints 
 - Task 2: /health/live + /health/ready (TCP probes, optional Redis), HealthEndpointTests (6), .gitattributes, optional docker-compose.yml (SQL Server + Redis), .env.example, infrastructure/scripts/local-sqlserver-setup.sql, docs/deployment/LOCAL_DEVELOPMENT.md. (Originally built on PostgreSQL; switched by D-016.)
 
 ## Current Task
-None in progress. Next is Task 3 after owner confirms task 2 (docker compose up + dotnet test).
+Awaiting owner approval of docs/security/RLS_ROLLOUT_PLAN.md (D-017) and D-009 before any Task 3 code. None in progress. Next is Task 3 after owner confirms task 2 (docker compose up + dotnet test).
 
 ## Files Modified
 global.json, Directory.Build.props, Directory.Packages.props, .editorconfig, .gitignore, DoubleUs.sln, src/**, tests/**, docker-compose.yml, .env.example, .gitattributes, infrastructure/scripts/local-sqlserver-setup.sql, docs/**; API health code in src/DoubleUs.API/Health/

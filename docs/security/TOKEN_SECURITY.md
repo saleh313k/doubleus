@@ -21,3 +21,13 @@ Disconnect (by tenant owner/admin, tenant deletion, or detected revocation) will
 - Webhook payload storage redacts configured fields; request bodies are not logged by default.
 - Exception messages from provider SDK/HTTP calls are scrubbed before logging.
 - Automated tests assert that log output for representative flows contains no token material.
+
+## D-009 proposal (token encryption mechanism) — awaiting owner approval
+Recommendation: **custom AES-256-GCM envelope using the .NET base library (`System.Security.Cryptography.AesGcm`, no extra NuGet package)** rather than ASP.NET Core Data Protection.
+- **Why not Data Protection:** its key ring (rotation, storage, protection of keys at rest) becomes a second system to operate and back up; it does not bind ciphertext to tenant/channel as associated data; and the key store on a SQL Server/Windows deployment still needs its own protection decision.
+- **Format:** `version(1) | keyId(2) | nonce(12) | tag(16) | ciphertext`. Associated data = `tenantId | connectedChannelId | purpose`, so a blob copied to another row or tenant fails to decrypt.
+- **Keys:** a master key (32 random bytes) supplied from configuration/secret store (environment variable or secret manager in dev; Azure Key Vault or equivalent in production). A per-tenant data key is derived with HKDF-SHA256 from the master key and tenant ID, limiting blast radius and keeping random-nonce usage per key far below GCM limits. No keys in the repo.
+- **Rotation:** add a new `keyId`; new writes use it; reads pick the key by `keyId`; a background job re-encrypts old rows; an old key is retired only when no row references it.
+- **Failure behavior:** decryption failure marks the channel `NeedsReconnect` and logs a redacted error; it never returns partial data.
+- **Tests (task 6):** round-trip, tamper detection, wrong tenant/channel AAD rejected, rotation, no token material in logs.
+- **Trade-off:** we own the cryptographic wrapper (small, well-defined code, but it must be reviewed carefully); the primitive itself is the platform's.
