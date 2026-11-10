@@ -5,7 +5,7 @@ Phases run in order; each ends with a PR and **owner approval before the next st
 | Phase | Scope | Branch | Exit criteria |
 |---|---|---|---|
 | 0 | Repo inspection, planning docs, CLAUDE.md, risk register | docs/phase-0-planning | Docs merged; owner approves |
-| 1 | Solution skeleton, PostgreSQL + EF Core, Redis, auth (Identity + JWT + refresh rotation), tenants, memberships, invitations, RBAC, Docker Compose, CI, first migrations, tenant-isolation tests | feature/backend-foundation, feature/tenant-management | `docker compose up` works; auth + isolation tests green |
+| 1 | Solution skeleton, SQL Server 2025 + EF Core, Redis, auth (Identity + JWT + refresh rotation), tenants, memberships, invitations, RBAC, Docker Compose, CI, first migrations, tenant-isolation tests | feature/backend-foundation, feature/tenant-management | `docker compose up` works; auth + isolation tests green |
 | 2 | React/Vite/TS/Tailwind/shadcn, auth pages, dashboard layout, i18n (EN/AR), RTL, responsive nav | feature/frontend-foundation | Login to dashboard in EN and AR/RTL |
 | 3 | Contacts, conversations, messages, SignalR, handoff, mock channel adapters, unified inbox UI | feature/unified-inbox | End-to-end mock conversation incl. handoff |
 | 4 | Meta verification, Instagram + WhatsApp connection, webhooks, outbound, delivery status | feature/instagram-integration, feature/whatsapp-integration | Tested with real eligible accounts (otherwise labeled mock-only) |
@@ -21,9 +21,9 @@ Phases run in order; each ends with a PR and **owner approval before the next st
 - Pick initial AI provider(s) and test Arabic quality.
 
 ## Phase 1 approved task breakdown (approved 2026-11-09; scope is limited to this list)
-1. Solution + projects + central package management + analyzers + .editorconfig.  <- in progress
-2. Docker Compose (postgres+pgvector, redis) and health endpoints.
-3. EF Core context, base entity conventions, tenant filter + RLS, first migration.
+1. Solution + projects + central package management + analyzers + .editorconfig. (done)
+2. Health endpoints + local database setup (SQL Server; Docker optional). (tests green; database setup pending owner)
+3. EF Core (SQL Server provider) context, base entity conventions, tenant filter + RLS security policy, first migration.
 4. Identity, registration/login/logout, refresh rotation, rate limiting.
 5. Tenants, members, invitations, role policies.
 6. Token encryption service (ADR D-009 first) incl. log redaction.

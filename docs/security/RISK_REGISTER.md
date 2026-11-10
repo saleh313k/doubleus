@@ -15,3 +15,5 @@
 | R11 | Personal data sent to AI providers (privacy, data residency) | High | Medium | Data minimization, provider DPA review, configurable/self-hosted providers | Phase 5 |
 | R12 | Single-developer bandwidth / scope creep | Medium | High | Small phases, phase gates, strict MVP scope | Ongoing |
 | R13 | Provider costs (WhatsApp + AI) exceed plan revenue | Medium | Medium | Usage metering, separate cost tracking, enforced limits | Phase 7 |
+| R14 | SQL Server licensing/hosting cost for production (Developer edition is dev/test only; Express has size/resource limits) | High (margin, launch) | Medium | Decide edition/host early: Azure SQL Database or licensed SQL Server; model cost per tenant in plan pricing | Owner, before Phase 8 |
+| R15 | SQL Server vector features immature (vector index experimental) and RLS not yet proven with pooled connections | Medium-High | Medium | Exact search filtered by tenant for MVP; benchmark before ANN; mandatory pooling/RLS tests in Phase 1 task 3 | Phase 1/5 |

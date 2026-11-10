@@ -33,7 +33,7 @@ Dependency rule (enforced by architecture tests): Domain depends on nothing; App
 
 ### AI reply
 1. Check usage limits and AI state (Paused/HumanHandoff = stop).
-2. Detect language; retrieve top-k chunks from pgvector filtered by `TenantId`.
+2. Detect language; retrieve top-k chunks from the SQL Server `vector` column (exact `VECTOR_DISTANCE`) filtered by `TenantId`.
 3. Build prompt: system rules + tenant config + retrieved context (as delimited untrusted data) + conversation window.
 4. Call `IAIProvider`; parse structured result (text, language, confidence, intent, suggested action, handoff flag, references).
 5. Server-side validation of any suggested action; low confidence or sensitive intent triggers handoff.
@@ -46,8 +46,8 @@ Agent -> API (authorized, tenant-verified) -> outbound message row (idempotency 
 - Shared database, shared schema, `TenantId` on every tenant-owned row.
 - Tenant resolved per request and **verified against the user's `TenantMember` record**; never trusted from the client alone.
 - EF Core global query filters by current tenant; worker jobs carry TenantId explicitly and set tenant context.
-- PostgreSQL Row-Level Security is mandatory defense in depth (D-010). EF filters are not the security boundary. Full strategy incl. raw SQL, jobs, admin operations and tenant switching: docs/security/TENANT_ISOLATION.md.
-- pgvector queries always include the tenant predicate. Integration tests prove cross-tenant access fails.
+- SQL Server Row-Level Security (security policy + `SESSION_CONTEXT`) is mandatory defense in depth (D-010). EF filters are not the security boundary. Full strategy incl. raw SQL, jobs, admin operations and tenant switching: docs/security/TENANT_ISOLATION.md.
+- Vector queries always include the tenant predicate. Integration tests prove cross-tenant access fails.
 
 ## 5. Authentication and authorization
 ASP.NET Core Identity; short-lived JWT access tokens; rotating refresh tokens stored hashed with reuse detection; rate limiting on auth endpoints. Roles: PlatformAdmin (global), BusinessOwner, BusinessAdmin, Agent (tenant roles via TenantMember). Policy-based authorization with permission checks.
@@ -56,7 +56,7 @@ ASP.NET Core Identity; short-lived JWT access tokens; rotating refresh tokens st
 `IMessagingChannel` per the spec, with onboarding, token-health and webhook-subscription capabilities split into separate interfaces so adapters stay small. Channels are enabled per tenant and per platform via flags. Provider formats never leak past the adapter: adapters emit a normalized inbound message.
 
 ## 7. AI layer
-`IAIProvider` (generation + embeddings), selected by configuration and platform admin. RAG: extract, normalize (non-destructive for Arabic), chunk, embed, store in pgvector, retrieve. Safety layer: input isolation, output validation, tool allowlist, PII minimization before provider calls.
+`IAIProvider` (generation + embeddings), selected by configuration and platform admin. RAG: extract, normalize (non-destructive for Arabic), chunk, embed, store as `vector` values in SQL Server, retrieve. Safety layer: input isolation, output validation, tool allowlist, PII minimization before provider calls.
 
 ## 8. Automation (n8n)
 One-way signed events from the core app to n8n (HMAC + timestamp), with timeouts, retries and failure logging. n8n never holds Meta tokens or does tenant auth. Core features degrade gracefully if n8n is down (outbox pattern for automation events).
@@ -70,7 +70,7 @@ See docs/architecture/RELIABLE_MESSAGING.md (inbox/outbox, idempotency, retries,
 Outbox/inbox tables, idempotent jobs, bounded exponential-backoff retries, dead-letter visibility, health checks (DB, Redis, providers), correlation IDs end to end.
 
 ## 11. Deployment
-Docker Compose: api, worker, frontend, postgres (pgvector), redis, n8n, nginx. Postgres, Redis and the n8n editor are not publicly exposed. Migrations are applied by an explicit step, never at production startup.
+Docker Compose: api, worker, frontend, sql server (native install or optional container), redis, n8n, nginx. SQL Server, Redis and the n8n editor are not publicly exposed. Migrations are applied by an explicit step, never at production startup.
 
 ## 12. Open design questions
 - RLS policy rollout details (Phase 1 task 3).

@@ -1,7 +1,7 @@
 <Project>
   <!--
     Central package management. Every PackageReference in the repo must omit Version and take it from here.
-    Phase 1 task 1 adds only the test-tooling versions below. Application packages (EF Core, Npgsql, Serilog, ...)
+    Phase 1 task 1 adds only the test-tooling versions below. Application packages (EF Core, the EF Core SQL Server provider, Serilog, ...)
     are added with the task that first needs them, with versions checked against NuGet at that time.
     NOTE: these versions could not be restored in the authoring sandbox (NuGet unreachable); CI is the first restore.
   -->
@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>

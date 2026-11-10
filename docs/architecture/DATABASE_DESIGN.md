@@ -1,9 +1,9 @@
 # Database Design
 
-Status: Phase 0 draft. PostgreSQL, EF Core migrations, UUID PKs, UTC `timestamptz`. All tenant-owned tables carry `tenant_id` (indexed, FK to `tenants`) and are covered by an EF global filter.
+Status: Phase 0 draft, revised for SQL Server (D-016). SQL Server 2025 / Azure SQL, EF Core migrations, UUID PKs, UTC timestamps. Table names below are logical; EF Core default naming applies. All tenant-owned tables carry `tenant_id` (indexed, FK to `tenants`) and are covered by an EF global filter and an RLS security policy.
 
 ## Conventions
-- snake_case names; `created_at` / `updated_at` on all rows.
+- Logical names in snake_case here; physical names follow EF Core defaults. `created_at` / `updated_at` on all rows.
 - Soft delete only where retention or audit requires it; FK `ON DELETE` behavior chosen and documented per relation.
 - Tokens and secrets stored encrypted; never logged.
 
@@ -35,7 +35,7 @@ connected_channels (tenant_id, type, external_account_id, status, ai_enabled, to
 | webhook_events | provider, provider_event_id, payload, status, attempts, received_at; unique(provider, provider_event_id) |
 
 ## AI and knowledge
-ai_configurations (tenant_id, assistant name, tone, languages, instructions, escalation rules, per-channel enable); knowledge_documents (tenant_id, source type, status, checksum); knowledge_chunks (tenant_id, document_id, content, language, embedding vector(N), token_count). Vector index (HNSW or IVFFlat) always combined with the tenant predicate. N is fixed by the chosen embedding model (ADR pending).
+ai_configurations (tenant_id, assistant name, tone, languages, instructions, escalation rules, per-channel enable); knowledge_documents (tenant_id, source type, status, checksum); knowledge_chunks (tenant_id, document_id, content, language, embedding vector(N), token_count). Search is exact `VECTOR_DISTANCE` always combined with the tenant predicate (per-tenant sets are small). SQL Server's approximate vector index is documented by Microsoft as experimental, so it is not used for the MVP until benchmarked. N is fixed by the chosen embedding model (ADR pending); EF Core 10 maps it as `SqlVector<float>` with column type `vector(N)`.
 
 ## Platform
 audit_logs (actor, tenant_id nullable, action, target, metadata, ip, at); automation_events (outbox: type, payload, status, attempts, next_attempt_at); failed-job tracking (own table or library tables, per ADR).
@@ -45,3 +45,9 @@ Conversation list/filter; messages by conversation + time; webhook idempotency u
 
 ## Data lifecycle
 Per-tenant retention windows; disconnecting a channel revokes and destroys its credentials; a deletion request purges tenant-owned rows, chunks and stored files, keeping only an audit record.
+
+## SQL Server specifics
+- **Types:** `uniqueidentifier` keys, `datetime2` columns holding UTC, `nvarchar` for all text (Arabic and emoji), database collation `Latin1_General_100_CI_AS_SC`.
+- **Key generation:** random GUIDs fragment clustered indexes; use sequential keys (application-generated UUIDv7 or `NEWSEQUENTIALID()`), decided in task 3.
+- **Idempotency uniques:** a SQL Server unique index allows only one NULL, so nullable unique columns (for example optional provider IDs) use filtered unique indexes.
+- **Vector support** requires SQL Server 2025 or Azure SQL Database; SQL Server 2022 and earlier cannot be used.

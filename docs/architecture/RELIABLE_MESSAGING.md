@@ -1,10 +1,10 @@
 # Reliable Message Processing
 
-Pattern: **transactional inbox + transactional outbox** in PostgreSQL, processed by the worker. Delivery is at-least-once; correctness comes from idempotency.
+Pattern: **transactional inbox + transactional outbox** in SQL Server, processed by the worker. Delivery is at-least-once; correctness comes from idempotency.
 
 ## Inbound (inbox)
 1. Webhook handler verifies the signature on the raw body, then inserts a `webhook_events` row with unique key (provider, provider_event_id or derived message ID). Unique violation = duplicate, acknowledged without reprocessing. Respond 200 quickly.
-2. Worker claims pending events (`SELECT ... FOR UPDATE SKIP LOCKED`, lease timeout), normalizes, and in one transaction upserts contact/conversation, inserts the message (unique on channel + provider_message_id), and writes follow-up outbox rows (SignalR notification, AI reply job). A crash rolls back; the event is reclaimed after lease expiry.
+2. Worker claims pending events (`SELECT ... WITH (UPDLOCK, READPAST, ROWLOCK)`, lease timeout), normalizes, and in one transaction upserts contact/conversation, inserts the message (unique on channel + provider_message_id), and writes follow-up outbox rows (SignalR notification, AI reply job). A crash rolls back; the event is reclaimed after lease expiry.
 
 ## Outbound (outbox)
 - Sending a reply inserts an `outbound_messages`/outbox row in the same transaction as the domain change, with a client-generated idempotency key.

@@ -5,7 +5,7 @@ Multi-tenant, AI-powered customer communication and sales automation SaaS. Busin
 **Status:** Phase 0 (planning). No application code yet. See [`docs/development/IMPLEMENTATION_STATUS.md`](docs/development/IMPLEMENTATION_STATUS.md).
 
 ## Planned stack
-.NET 10 / ASP.NET Core · EF Core · PostgreSQL + pgvector · Redis · SignalR · React + TypeScript + Vite + Tailwind + shadcn/ui · self-hosted n8n (internal only) · Docker Compose · GitHub Actions
+.NET 10 / ASP.NET Core · EF Core · SQL Server 2025 (native `vector` type) · Redis · SignalR · React + TypeScript + Vite + Tailwind + shadcn/ui · self-hosted n8n (internal only) · Docker Compose · GitHub Actions
 
 ## Documentation map
 | Area | File |
